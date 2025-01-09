@@ -45,40 +45,43 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body:
-        Column(
-          children: <Widget>[
-            Container(
-              color: Theme.of(context).colorScheme.primary,
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Image(image: FileImage(File(Data.images['ground-floor'] ?? 'default_image_path')),),
-                    Image(image: FileImage(File(Data.images['first-floor'] ?? 'default_image_path')),),
-                    Image(image: FileImage(File(Data.images['second-floor'] ?? 'default_image_path')),),
-                    Image(image: FileImage(File(Data.images['last-floor'] ?? 'default_image_path')),),
-                  ],
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Column(
+            children: <Widget>[
+              Container(
+                color: Theme.of(context).colorScheme.primary,
+                height: constraints.maxHeight * 0.6,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Image(image: FileImage(File(Data.images['ground-floor'] ?? 'default_image_path')),),
+                      Image(image: FileImage(File(Data.images['first-floor'] ?? 'default_image_path')),),
+                      Image(image: FileImage(File(Data.images['second-floor'] ?? 'default_image_path')),),
+                      Image(image: FileImage(File(Data.images['last-floor'] ?? 'default_image_path')),),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              color: Colors.brown,
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Image(image: FileImage(File(Data.images['basement'] ?? 'default_image_path')),),
-                  ],
+              Container(
+                color: Colors.brown,
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Image(image: FileImage(File(Data.images['basement'] ?? 'default_image_path')),),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
