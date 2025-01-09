@@ -1,33 +1,34 @@
+import 'package:building_app/main.dart';
 import 'package:flutter/material.dart';
 import 'data.dart' as appData;
-import 'main.dart';
+import 'tree.dart';
 import 'dart:io';
 
 class SpaceScreen extends StatefulWidget {
-  final String space;
+  final String id;
 
-  const SpaceScreen({super.key, required this.space});
+  const SpaceScreen({super.key, required this.id});
 
   @override
   State<SpaceScreen> createState() => _SpaceScreenState();
 }
 
 class _SpaceScreenState extends State<SpaceScreen> {
-  late String space;
-  late List<String> doors;
+  late Tree tree;
 
   @override
   void initState() {
     super.initState();
-    space = widget.space;
-    doors = appData.Data.doors[space] ?? [];
+    tree = getTree(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Doors in $space'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        title: Text(tree.root.id),
         actions: [
           IconButton(
             icon: Image(
@@ -36,54 +37,51 @@ class _SpaceScreenState extends State<SpaceScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home Page')),
+                MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Home Page')),
               );
             },
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: doors.length,
-        itemBuilder: (context, index) {
-          return _buildRow(index);
-        },
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16.0),
+        itemCount: tree.root.children.length,
+        itemBuilder: (BuildContext context, int index) =>
+          _buildRow(tree.root.children[index], index),
+        separatorBuilder: (BuildContext context, int index) =>
+        const Divider(),
       ),
     );
   }
 
-  Widget _buildRow(int index) {
-    String door = doors[index];
-    String doorStatus = appData.Data.doorStatus[door] ?? 'locked';
-    bool isClosed = appData.Data.doorClosed[door] ?? true;
-    String closedImageKey = isClosed ? 'closed' : 'open';
-
+  Widget _buildRow(Door door, int index) {
     return ListTile(
-      title: Text(door),
+      title: Text('D ${door.id}'),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Image(
-            image: FileImage(File(appData.Data.images[doorStatus] ?? 'images/default_image.png')),
+            image: FileImage(File(appData.Data.images[door.state] ?? 'images/default_image.png')),
           ),
           SizedBox(width: 10),
-          Image(
-            image: FileImage(File(appData.Data.images[closedImageKey] ?? 'images/default_image.png')),
-          ),
+            Image(
+            image: FileImage(File(appData.Data.images[door.closed ? 'closed' : 'opened'] ?? 'images/default_image.png')),
+            ),
           IconButton(
             icon: Icon(Icons.more_vert),
             onPressed: () => _showDoorActions(context, door),
           ),
         ],
       ),
-    );
+    );  
   }
 
-  void _showDoorActions(BuildContext context, String door) {
+  void _showDoorActions(BuildContext context, Door door) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Actions for $door'),
+          title: Text('Actions for ${door.id}'),
           content: Text('Choose an action for this door.'),
           actions: appData.Actions.all.map((action) {
             return TextButton(
@@ -91,11 +89,11 @@ class _SpaceScreenState extends State<SpaceScreen> {
               onPressed: () {
                 setState(() {
                   if(action == appData.Actions.unlock || action == appData.Actions.unlockShortly || action == appData.Actions.lock) {
-                    appData.Data.doorStatus[door] = action;
+                    appData.Data.doorStatus[door.id] = action;
                     if (action == appData.Actions.unlockShortly) {
                       Future.delayed(Duration(seconds: 10), () {
                         setState(() {
-                          appData.Data.doorStatus[door] = appData.Actions.lock;
+                          appData.Data.doorStatus[door.id] = appData.Actions.lock;
                         });
                       });
                     }
@@ -103,11 +101,11 @@ class _SpaceScreenState extends State<SpaceScreen> {
                      // Update doorClosed status based on action
                     if (action == appData.Actions.open) {
                       setState(() {
-                          appData.Data.doorClosed[door] = false;
+                          appData.Data.doorClosed[door.id] = false;
                         });
                     } else if (action == appData.Actions.close) {
                       setState(() {
-                          appData.Data.doorClosed[door] = true;
+                          appData.Data.doorClosed[door.id] = true;
                         });
                     }
                   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'building.dart';
+import 'screen_partition.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // removes the debug banner that hides the home button
       title: 'Building App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(fontSize: 20),
         ),
       ),
-      home: const MyHomePage(title: 'Home Page'),
+      home: const PartitionScreen(id: "building"),
     );
   }
 }
@@ -50,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => BuildingScreen()),
+                  MaterialPageRoute(builder: (context) => PartitionScreen(id: "building")),
                 );
               },
               child: const Text('Go to Building'),
