@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screen_partition.dart';
+import 'dart:io';
+import 'data.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,38 +45,40 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body:
+        Column(
           children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PartitionScreen(id: "building")),
-                );
-              },
-              child: const Text('Go to Building'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                textStyle: const TextStyle(fontSize: 20),
+            Container(
+              color: Theme.of(context).colorScheme.primary,
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Image(image: FileImage(File(Data.images['ground-floor'] ?? 'default_image_path')),),
+                    Image(image: FileImage(File(Data.images['first-floor'] ?? 'default_image_path')),),
+                    Image(image: FileImage(File(Data.images['second-floor'] ?? 'default_image_path')),),
+                    Image(image: FileImage(File(Data.images['last-floor'] ?? 'default_image_path')),),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Close the application
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close Application'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                textStyle: const TextStyle(fontSize: 20),
+            Container(
+              color: Colors.brown,
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Image(image: FileImage(File(Data.images['basement'] ?? 'default_image_path')),),
+                  ],
+                ),
               ),
             ),
           ],
         ),
-      ),
     );
   }
 }
