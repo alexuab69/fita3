@@ -2,7 +2,6 @@ import 'package:building_app/main.dart';
 import 'package:flutter/material.dart';
 import 'data.dart' as appData;
 import 'tree.dart';
-import 'dart:io';
 import 'requests.dart';
 
 class SpaceScreen extends StatefulWidget {
@@ -74,13 +73,15 @@ class _SpaceScreenState extends State<SpaceScreen> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image(
-            image: FileImage(File(appData.Data.images[door.state] ?? 'images/default_image.png')),
-          ),
-          SizedBox(width: 10),
-            Image(
-            image: FileImage(File(appData.Data.images[door.closed ? 'closed' : 'opened'] ?? 'images/default_image.png')),
+            Icon(
+            door.state == appData.DoorState.locked
+              ? Icons.lock
+              : door.state == appData.DoorState.propped
+                ? Icons.warning
+                : Icons.lock_open,
             ),
+          SizedBox(width: 10),
+          Icon(door.closed ? Icons.door_front_door : Icons.door_back_door),
           IconButton(
             icon: Icon(Icons.more_vert),
             onPressed: () => _showDoorActions(context, door),
@@ -102,28 +103,30 @@ class _SpaceScreenState extends State<SpaceScreen> {
               child: Text(action.capitalize()),
               onPressed: () {
                 setState(() {
-                  if(action == appData.Actions.unlock || action == appData.Actions.unlockShortly || action == appData.Actions.lock) {
-                    door.state = action;
-                    if (action == appData.Actions.unlockShortly) {
-                      Future.delayed(Duration(seconds: 10), () {
+                    if (action == appData.Actions.unlock || action == appData.Actions.unlockShortly) {
+                      door.state = appData.DoorState.unlocked;
+                      if (action == appData.Actions.unlockShortly) {
+                        Future.delayed(Duration(seconds: 10), () {
+                          setState(() {
+                            door.state = appData.DoorState.locked;
+                          });
+                        });
+                      }
+                    } else if (action == appData.Actions.lock) {
+                      door.state = appData.DoorState.locked;
+                    } else {
+                      if (action == appData.Actions.open) {
                         setState(() {
-                          door.state = appData.Actions.lock;
-                        });
-                      });
-                    }
-                  } else {
-                     // Update doorClosed status based on action
-                    if (action == appData.Actions.open) {
-                      setState(() {
-                          door.closed = false;
-                        });
-                    } else if (action == appData.Actions.close) {
-                      setState(() {
-                          door.closed = true;
-                        });
+                            door.closed = false;
+                          });
+                      } else if (action == appData.Actions.close) {
+                        setState(() {
+                            door.closed = true;
+                          });
+                      }
                     }
                   }
-                });
+                );
                 Navigator.of(context).pop();
                 // Add your action for the respective door action here
               },
