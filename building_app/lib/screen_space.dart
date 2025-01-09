@@ -1,3 +1,4 @@
+import 'package:building_app/reader.dart';
 import 'package:building_app/main.dart';
 import 'package:flutter/material.dart';
 import 'data.dart' as appData;
@@ -15,6 +16,7 @@ class SpaceScreen extends StatefulWidget {
 
 class _SpaceScreenState extends State<SpaceScreen> {
   late Future<Tree> futureTree;
+  late Future<Reader> futureReader;
 
   @override
   void initState() {
@@ -81,7 +83,7 @@ class _SpaceScreenState extends State<SpaceScreen> {
                 : Icons.lock_open,
             ),
           SizedBox(width: 10),
-          Icon(door.closed ? Icons.door_front_door : Icons.door_back_door),
+          Icon(door.closed ? Icons.door_front_door : Icons.meeting_room),
           IconButton(
             icon: Icon(Icons.more_vert),
             onPressed: () => _showDoorActions(context, door),
@@ -125,8 +127,7 @@ class _SpaceScreenState extends State<SpaceScreen> {
                           });
                       }
                     }
-
-                    
+                    futureReader = sendRequest(action, door.id);
                   }
                 );
                 Navigator.of(context).pop();
