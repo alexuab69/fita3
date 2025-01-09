@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'data.dart' as appData;
 import 'tree.dart';
 import 'dart:io';
+import 'requests.dart';
 
 class SpaceScreen extends StatefulWidget {
   final String id;
@@ -14,43 +15,56 @@ class SpaceScreen extends StatefulWidget {
 }
 
 class _SpaceScreenState extends State<SpaceScreen> {
-  late Tree tree;
+  late Future<Tree> futureTree;
 
   @override
   void initState() {
     super.initState();
-    tree = getTree(widget.id);
+    futureTree = getTree(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        title: Text(tree.root.id),
-        actions: [
-          IconButton(
-            icon: Image(
-              image: FileImage(File(appData.Data.images['home_screen'] ?? 'images/default_image.png')),
+    return FutureBuilder<Tree>(
+      future: futureTree,
+      builder: (context, snapshot) {
+        // anonymous function
+        if (snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              title: Text(snapshot.data!.root.id),
+              actions: <Widget>[
+                IconButton(icon: const Icon(Icons.home), onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Home Page')),
+                    );
+                  }
+                ),
+              ],
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Home Page')),
-              );
-            },
-          ),
-        ],
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: tree.root.children.length,
-        itemBuilder: (BuildContext context, int index) =>
-          _buildRow(tree.root.children[index], index),
-        separatorBuilder: (BuildContext context, int index) =>
-        const Divider(),
-      ),
+            body: ListView.separated(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: snapshot.data!.root.children.length,
+              itemBuilder: (BuildContext context, int i) =>
+                  _buildRow(snapshot.data!.root.children[i], i),
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+        // By default, show a progress indicator
+        return Container(
+            height: MediaQuery.of(context).size.height,
+            color: Colors.white,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ));
+      },
     );
   }
 
