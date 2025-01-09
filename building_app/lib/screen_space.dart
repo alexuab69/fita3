@@ -89,11 +89,11 @@ class _SpaceScreenState extends State<SpaceScreen> {
               onPressed: () {
                 setState(() {
                   if(action == appData.Actions.unlock || action == appData.Actions.unlockShortly || action == appData.Actions.lock) {
-                    appData.Data.doorStatus[door.id] = action;
+                    door.state = action;
                     if (action == appData.Actions.unlockShortly) {
                       Future.delayed(Duration(seconds: 10), () {
                         setState(() {
-                          appData.Data.doorStatus[door.id] = appData.Actions.lock;
+                          door.state = appData.Actions.lock;
                         });
                       });
                     }
@@ -101,11 +101,11 @@ class _SpaceScreenState extends State<SpaceScreen> {
                      // Update doorClosed status based on action
                     if (action == appData.Actions.open) {
                       setState(() {
-                          appData.Data.doorClosed[door.id] = false;
+                          door.closed = false;
                         });
                     } else if (action == appData.Actions.close) {
                       setState(() {
-                          appData.Data.doorClosed[door.id] = true;
+                          door.closed = true;
                         });
                     }
                   }
