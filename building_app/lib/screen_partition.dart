@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'tree.dart';
 import 'screen_space.dart';
 import 'main.dart';
-import 'dart:io';
-import 'data.dart';
 import 'requests.dart';
 
 class PartitionScreen extends StatefulWidget {
